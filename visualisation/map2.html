@@ -1,0 +1,170 @@
+<html>
+<head>
+  <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
+
+<script src="jquery-3.3.1.min.js"></script>
+
+        <script>
+
+            var sceneAffichee = true;
+            var marker = new Array();
+      function scene(L, mymap, currentPoint) {
+          // console.log(sceneAffichee)
+          // console.log(marker)
+//chager le cache du projet sarah 1
+
+var cacheScene = JSON.parse(localStorage.getItem('scene'));
+
+
+         // $.getJSON('emplacement.json', function(cacheScene){//data c'est la liste//???
+          if(sceneAffichee==false){
+                  sceneAffichee = true ; 
+                   }else{
+                    sceneAffichee = false ; 
+                        }
+          for( let objet in cacheScene){ //??? parcourir la liste des element contenus ds le cache 
+                
+         // for (let objet of data) { ///???
+                // let x = objet.x; ///???
+                 let x = parseInt(cacheScene[objet].x); // recuperer les valeurs de chaque elelemnt 
+                 //let y = objet.y;///???
+                 let y =parseInt(cacheScene[objet].y);
+                // let image = objet.image;///???
+                 let image = cacheScene[objet].lien;
+                 //let width = objet.width;///???
+                 let width = cacheScene[objet].width;
+                 //let height = objet.height; ///???
+                 let height = cacheScene[objet].height;
+                 let myIcon = L.icon({
+                  iconUrl: image,
+                  iconSize: [width, height],   
+              });
+              //la localisation de l image en dur à 30px / au rectangle 
+                 let localImage = L.point(currentPoint.x + x,currentPoint.y  +y); // pour localiser l'endroit de dépot de l'image par rapport au rectangle 
+              // les atrributs de mon icone(image)
+ 
+                 if(sceneAffichee==false){              
+                 let imarker = new L.marker(mymap.containerPointToLatLng(localImage), {icon: myIcon});
+                mymap.addLayer(imarker);
+                marker.push(imarker);// ajoute un ou plusieurs éléments à la fin d'un tableau et retourne la nouvelle taille du tableau
+                console.log(sceneAffichee);
+                }else{
+                for(i=0;i<marker.length;i++) {
+                  mymap.removeLayer(marker[i]);
+                }               
+                //console.log(sceneAffichee);
+                }
+             
+              //L.marker(mymap.containerPointToLatLng(localImage), {icon: myIcon}).addTo(mymap); // ajouter l'icone (l'image) sous forme d'un marker a ma map  
+                }
+            //  });
+              }
+
+      function initialisation() {
+
+          var mymap = L.map('mapid').setView([43.631522, 3.863455], 13);// carte map et 13 cest lezom
+          var marker = L.marker([43.631522, 3.863455]).addTo(mymap).on('click',onClick)//déclaration de la varibale Marker pour tracer une place sur Map;  
+
+          var latLng = L.latLng([43.631522, 3.863455]);//pour représenter un point geographiquement
+          // chercher les pixel de ce point 
+          var currentPoint = mymap.latLngToContainerPoint(latLng);
+          console.log("-----------------------------------------------current:"+ currentPoint);
+          //définir d'autre variable
+
+          var width =510; // La longuer de rectangle
+          var height = 505; // La largeur de rectangle
+          //j'ai rajoute 200 en haut a gauche
+          var southWest = L.point(currentPoint.x,(currentPoint.y+height));//pour positioner le marqueur sur le point supérieur gauche
+
+          var northEast=L.point((currentPoint.x +width),currentPoint.y);
+          console.log("-----------------------------------------------point 1:"+ southWest);
+
+          console.log("-----------------------------------------------point 2:"+ northEast);
+
+          var bounds2= L.latLngBounds(mymap.containerPointToLatLng(northEast),mymap.containerPointToLatLng(southWest));//définit les limites géographiques d'un rectangle
+
+          L.rectangle(bounds2, {color: "white", background:"white", weight: 2}).addTo(mymap);
+
+          mymap.fitBounds(bounds2);
+
+     //scene(L, mymap, currentPoint);
+ 
+
+       function onClick() {
+      
+        scene(L, mymap, currentPoint);
+      
+         }
+  
+//////////////////////////////////
+
+      //zoom
+    
+    // mymap.on('zoomend', function() {
+    //  var currentZoom = mymap.getZoom();
+    //        if(currentZoom >= 16){
+    //       //affcicher les images 
+    //            scene(L, mymap, currentPoint);
+        
+    //     }
+          
+    //   });
+
+        marker.bindPopup("Campus Triole").openPopup();
+        
+
+          var popup = L.popup();// c'est pour envoyer les cordonnées de la souris ou on clique 
+          function onMapClick(e) {
+         popup
+        .setLatLng(e.latlng)
+        .setContent("vous avez cliqué sur la map at " + e.latlng.toString())
+        .openOn(mymap);
+
+                       }
+        mymap.on('click', onMapClick);
+
+
+        $.getJSON("data/emplacement.json", function(data){// afficher dans local storage
+              // Put the object into storage
+              localStorage.setItem('data', JSON.stringify(data));
+
+              // Retrieve the object from storage
+              var retrieveddata = localStorage.getItem('data');
+
+              console.log('retrievedObject: ', JSON.parse(retrieveddata));
+
+            });
+
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+           maxZoom: 18,
+           id: 'mapbox.streets',
+           accessToken: 'pk.eyJ1IjoibnNhYWRhIiwiYSI6ImNqcmJ0eXZxZjAwamQ0OXBheHd3Z2c2cHgifQ.h8Y6rCLGY27RC9Qbg4mxUQ'
+                }).addTo(mymap);
+
+                 }
+
+          
+        </script>
+          <style>
+            #mapid {width: 100%;height:100%; }
+          </style>
+
+        
+
+        </head>
+        <body onLoad="initialisation()">
+          <div  id="mapid"></div>
+
+         
+
+        </body>
+      </html>
+

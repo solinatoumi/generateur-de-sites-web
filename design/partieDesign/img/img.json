@@ -1,0 +1,9 @@
+[
+{"type":"image","lien":"img/table.jpg","x":"510","y":"10"},
+{"type":"image","lien":"img/chaise.jpg","x":"510","y":"50"},
+{"type":"image","lien":"img/litLyes.jpg","x":"510","y":"100"},
+{"type":"image","lien":"img/litAloute.jpg","x":"510","y":"150"},
+{"type":"image","lien":"img/litCend.jpg","x":"510","y":"200"},
+{"type":"image","lien":"img/croix.jpg","x":"520","y":"250"}
+
+]

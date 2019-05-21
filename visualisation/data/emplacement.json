@@ -1,0 +1,14 @@
+[
+    
+  { "image":"table.jpg" , "x":20, "y":30, "width":30, "height":30},
+  { "image":"table.jpg" , "x":40, "y":20, "width":30, "height":60},
+  { "image":"litLyes.jpg" , "x":60, "y":20, "width":30, "height":60},
+   { "image":"litAloute.jpg" , "x":80, "y":20, "width":30, "height":60},
+    { "image":"litCend.jpg" , "x":100, "y":20, "width":30, "height":60}
+
+
+
+
+]
+
+
